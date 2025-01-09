@@ -1,19 +1,20 @@
 import React, { useId } from "react";
 import { Input, Select } from "antd";
 
+const { Option } = Select; // Correctly destructure Option
+
 export default function InputBox({
   label,
   amount,
   onAmountChange,
   onCurrencyChange,
-  currencyOptions = ['usd','inr'],
-  selectedCurrency = "usd",
+  currencyOptions = [],
+  selectedCurrency = "USD",
   amountDisable = false,
   currencyDisable = false,
   classname = "",
   placeholder = "Enter currency value",
 }) {
-  console.log(currencyOptions)
   const amountInputId = useId();
 
   return (
@@ -62,9 +63,9 @@ export default function InputBox({
         placeholder="Currency"
       >
         {currencyOptions.map((currency) => (
-          <Select.Option key={currency} value={currency}>
+          <Option key={currency} value={currency}>
             {currency}
-          </Select.Option>
+          </Option>
         ))}
       </Select>
     </div>

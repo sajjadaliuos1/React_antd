@@ -8,8 +8,8 @@ function App() {
   const [from, setFrom] = useState("USD");
   const [to, setTo] = useState("INR");
   const [convertedAmount, setConvertedAmount] = useState(0);
-  const currencyInfo = useCurrencyInfo(from);  // This will hold exchange rates for the selected 'from' currency.
-  
+  const { data: currencyInfo, error } = useCurrencyInfo(from); // Destructure data and error
+
   const options = currencyInfo ? Object.keys(currencyInfo) : [];
 
   const swap = () => {
@@ -17,6 +17,13 @@ function App() {
     setTo(from);
     setAmount(convertedAmount);
     setConvertedAmount(amount);
+  };
+
+  const convert = () => {
+    if (currencyInfo && currencyInfo[to]) {
+      const conversionRate = currencyInfo[to];
+      setConvertedAmount((amount * conversionRate).toFixed(2)); // Perform conversion
+    }
   };
 
   return (
@@ -40,6 +47,7 @@ function App() {
       <h1 style={{ color: "white", fontSize: "32px", marginBottom: "24px" }}>
         Currency Converter
       </h1>
+      {error && <p style={{ color: "red" }}>Error: {error}</p>}
       <form
         style={{
           display: "flex",
@@ -55,7 +63,7 @@ function App() {
           placeholder="Enter amount"
           currencyOptions={options}
           value={amount}
-          onCurrencyChange={(currency) => setFrom(currency)} // Correct currency change handling
+          onCurrencyChange={(currency) => setFrom(currency)}
           selectedCurrency={from}
           onAmountChange={(amount) => setAmount(amount)}
         />
@@ -77,12 +85,13 @@ function App() {
           label="To"
           amount={convertedAmount}
           currencyOptions={options}
-          onCurrencyChange={(currency) => setTo(currency)} // Correct currency change handling
-          selectedCurrency={to} // Correctly pass the 'to' currency
+          onCurrencyChange={(currency) => setTo(currency)}
+          selectedCurrency={to}
         />
         <div style={{ justifyContent: "space-between", width: "100%" }}>
           <button
-            type="button" // Change to "button" since we're not submitting for conversion
+            type="button"
+            onClick={convert} // Add conversion logic here
             style={{
               padding: "8px 16px",
               backgroundColor: "#28a745",

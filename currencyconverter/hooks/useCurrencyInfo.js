@@ -5,7 +5,6 @@ function useCurrencyInfo(baseCurrency) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // A flag to prevent state update after unmounting
     let isMounted = true;
 
     const fetchCurrencyData = async () => {
@@ -13,15 +12,21 @@ function useCurrencyInfo(baseCurrency) {
         const response = await fetch(
           `https://api.freecurrencyapi.com/v1/latest?apikey=fca_live_BoMpzN2R80eudRutyN5EAaYBSwEnLZLWDPhrsFoq&base_currency=${baseCurrency}`
         );
+
+        console.log("Raw Response:", response);
+
         if (!response.ok) {
-          throw new Error("Failed to fetch currency data");
+          throw new Error(`Failed to fetch currency data: ${response.status}`);
         }
+
         const result = await response.json();
 
-        // Check the structure of the response
+        console.log("Parsed Response:", result);
+
         if (result && result.data) {
+          console.log("Currency Data:", result.data);
           if (isMounted) {
-            setData(result.data); // Assuming 'data' is the correct field
+            setData(result.data);
           }
         } else {
           throw new Error("Invalid data structure from API");
@@ -30,17 +35,16 @@ function useCurrencyInfo(baseCurrency) {
         if (isMounted) {
           setError(err.message);
         }
-        console.error(err);
+        console.error("Error:", err);
       }
     };
 
     fetchCurrencyData();
 
-    // Cleanup to avoid state update if the component is unmounted
     return () => {
       isMounted = false;
     };
-  }, [baseCurrency]); // Trigger the effect only when baseCurrency changes
+  }, [baseCurrency]);
 
   return { data, error };
 }
